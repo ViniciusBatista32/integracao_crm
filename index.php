@@ -6,6 +6,9 @@ const HOMOLOG = false;
 
 require 'vendor/autoload.php';
 
+const TOKEN = "2d87e97bbf7ad0fddea2767b2fd49497c5b5e771";
+const EMAIL = "nauan.hael@sidegrowth.com.br";
+
 $possible_cols = ["nome", "email", "telefone", "moradia", "cpf", "investimento", "atendimento"];
 $mandatory_cols = ["nome" => false, "email" => false, "telefone" => false];
 $jump_cols = [];
@@ -147,8 +150,8 @@ foreach($rows as $row_idx => $row)
     $ch   = curl_init();
 
     $headers = [
-        "token: b12660175bbdca3b89c20735869298525833f453",
-        "email: paulof@cvcrm.com.br",
+        "token: " . TOKEN,
+        "email: " . EMAIL,
         "Content-Type: application/json"
     ];
 
