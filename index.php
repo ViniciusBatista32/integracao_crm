@@ -6,7 +6,7 @@ const HOMOLOG = false;
 
 require 'vendor/autoload.php';
 
-$possible_cols = ["nome", "email", "telefone", "moradia", "cpf", "investimento", "atendimento"];
+$possible_cols = ["nome", "email", "telefone", "moradia", "cpf", "investimento", "atendimento", "midia"];
 $mandatory_cols = ["nome" => false, "email" => false, "telefone" => false];
 $jump_cols = [];
 
@@ -21,10 +21,12 @@ $service = new Google_Service_Sheets($client);
 
 
 
-// PEGA OS LEADS DA PLANILHA DE PRODUÇÃO
-$page = 'COPAÍBA';
+// DEFINE ID DAS PLANILHAS DE BACKUP E PRODUÇÃO
 $production_sheet_id = '1561peowbKSAdg4iupvNZ-HTmeSzlx6SYqCkq-NnFeM0';
 $backup_sheet_id = '1NLtnYohMfk5fkQPXoL4IEx2D597in1d4JfehvNLCSag';
+
+// PEGA OS LEADS DA PLANILHA DE PRODUÇÃO - PÁGINA "COPAÍBA"
+$page = 'COPAÍBA';
 $response = $service->spreadsheets_values->get($production_sheet_id, $page);
 $sheet_data = $response->getValues();
 
@@ -103,6 +105,10 @@ foreach($sheet_data as $row_idx => $row)
                     $lead_desc .= "Atendimento:" . $val . "\n";
                     continue 2;
                 break;
+
+                case "midia":
+                    $col = "endereco";
+                break;
             }
             
             $row_data["json"][$col] = $val;
@@ -147,8 +153,8 @@ foreach($rows as $row_idx => $row)
     $ch   = curl_init();
 
     $headers = [
-        "token: b12660175bbdca3b89c20735869298525833f453",
-        "email: paulof@cvcrm.com.br",
+        "token: 2d87e97bbf7ad0fddea2767b2fd49497c5b5e771",
+        "email: nauan.hael@sidegrowth.com.br",
         "Content-Type: application/json"
     ];
 
@@ -160,10 +166,15 @@ foreach($rows as $row_idx => $row)
 
     $result = curl_exec($ch);
     curl_close($ch);
+
+    var_dump($result);
+    echo $row_json;
     
     // SE RESULTADO FOR == TRUE -> GRAVA LEAD NA PLANILHA DE BACKUP E REMOVE DA DE PRODUÇÃO
     // SE RESULTADO FOR == FALSE -> GRAVA ERRO NA PLANILHA DE PRODUÇÃO E NÃO REMOVE LEAD
-    if($result == true)
+    $result = json_decode($result, true);
+    
+    if(isset($result['sucesso']) && $result['sucesso'] == true)
     {
         // SEMEIA PLANILHA DE BACKUP COM LEAD QUE FOI INSERIDO
         $rows = [$row["raw_data"]];
